@@ -1,3 +1,15 @@
+/*
+   code write for project:
+   https://github.com/Ni3nayka/Robot_L298P
+
+   author: Egor Bakay <egor_bakay@inbox.ru> Ni3nayka
+   write:  February 2022
+   modify: February 2022
+
+   manual:
+   https://disk.yandex.ru/i/0wFjNU1MXYYkww
+*/
+
 #include <Robot_L298P.h>       // Подключаем библиотеку
 
 void setup() {
