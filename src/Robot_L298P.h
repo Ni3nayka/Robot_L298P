@@ -4,28 +4,28 @@
 
    author: Egor Bakay <egor_bakay@inbox.ru> Ni3nayka
    write:  February 2022
-   modify: February 2022
+   modify: April 2023
 */
 
 #pragma once
 
 #include "PinChangeInterrupt.h"
-//#include "Robot_L298P_main.h"
-
-#define L298P_PWMA 10
-#define L298P_PWMB 11
-#define L298P_DIRA 12
-#define L298P_DIRB 13
-
-#define L298P_ENCA1 5
-#define L298P_ENCA2 6
-#define L298P_ENCB1 7
-#define L298P_ENCB2 8
+#include "Pins.h"
+#include "EncMotor.h"
 
 void Robot_L298P_function_for_encoder_A1_josdhejlnfsdejlnfdsvzjik();
 void Robot_L298P_function_for_encoder_A2_josdhejlnfsdejlnfdsvzjik();
 void Robot_L298P_function_for_encoder_B1_josdhejlnfsdejlnfdsvzjik();
 void Robot_L298P_function_for_encoder_B2_josdhejlnfsdejlnfdsvzjik();
+
+class test_class {
+  public:
+    static test_fun() {
+      
+    }
+};
+
+test_class test_object;
 
 class Robot_L298P {
   public:
@@ -56,7 +56,7 @@ class Robot_L298P {
     
       pinMode(L298P_ENCA1, INPUT);
       pinMode(L298P_ENCA2, INPUT);
-      attachPCINT(digitalPinToPCINT(L298P_ENCA1), Robot_L298P_function_for_encoder_A1_josdhejlnfsdejlnfdsvzjik, CHANGE);
+      attachPCINT(digitalPinToPCINT(L298P_ENCA1), test_object.test_fun, CHANGE);
       attachPCINT(digitalPinToPCINT(L298P_ENCA2), Robot_L298P_function_for_encoder_A2_josdhejlnfsdejlnfdsvzjik, CHANGE);
       Robot_L298P::enc_dat_A1_real = digitalRead(L298P_ENCA1);
       Robot_L298P::enc_dat_A2_real = digitalRead(L298P_ENCA2);
