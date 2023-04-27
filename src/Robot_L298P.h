@@ -14,6 +14,13 @@
 #include "EncMotor.h"
 #include "EncMotor_1.h"
 
+#ifndef ENC_MOTOR_PARROT_CM
+#define ENC_MOTOR_PARROT_CM 157
+#endif
+#ifndef ENC_MOTOR_PARROT_ANGLE
+#define ENC_MOTOR_PARROT_ANGLE 25
+#endif
+
 class Robot_L298P {
   public:
     enc_motor motor_A;
@@ -28,8 +35,9 @@ class Robot_L298P {
       Robot_L298P::motor_B.run(speed_b);
     }
     void enc_run_update() {
-      Robot_L298P::motor_A.enc_run_update();
-      Robot_L298P::motor_B.enc_run_update();    
+      long int d = Robot_L298P::motor_A.enc-Robot_L298P::motor_B.enc;
+      Robot_L298P::motor_A.enc_run_update(-d);
+      Robot_L298P::motor_B.enc_run_update(-d);    
     }
   
 
