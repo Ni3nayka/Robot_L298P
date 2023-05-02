@@ -4,43 +4,13 @@
 
    author: Egor Bakay <egor_bakay@inbox.ru> Ni3nayka
    write:  April 2022
-   modify: April 2023
+   modify: May 2023
 */
 
 #pragma once
 
 #include "PinChangeInterrupt.h"
-
-#define MAX_MOTOR_MANAGEMENT_VALUE   100
-#define MAX_MOTOR_REAL_VALUE   255
-
-#define MOTOR_ENC_DT 10
-
-#ifndef enc_motor_1_SPEED_KP
-#define enc_motor_1_SPEED_KP 0.03
-#endif
-#ifndef enc_motor_1_SPEED_KD
-#define enc_motor_1_SPEED_KD 0.3
-#endif
-
-#ifndef enc_motor_1_DISTANSE_KP
-#define enc_motor_1_DISTANSE_KP 1 // 1
-#endif 
-#ifndef enc_motor_1_DISTANSE_KD
-#define enc_motor_1_DISTANSE_KD 8 // 8
-#endif 
-#ifndef enc_motor_1_DISTANSE_MAX_E_K
-#define enc_motor_1_DISTANSE_MAX_E_K 3
-#endif 
-#ifndef enc_motor_1_DISTANSE_RAZGON_PLUS
-#define enc_motor_1_DISTANSE_RAZGON_PLUS 0.02
-#endif 
-#ifndef enc_motor_1_DISTANSE_KK
-#define enc_motor_1_DISTANSE_KK 0.4 //0.4
-#endif 
-#ifndef enc_motor_1_DISTANSE_END_TIME
-#define enc_motor_1_DISTANSE_END_TIME 1000
-#endif
+#include "EncMotorConst.h"
 
 class enc_motor_1 {
   public:
@@ -121,26 +91,27 @@ class enc_motor_1 {
         if (enc_motor_1::motor_speed_distance_mode) {
           long int e = (enc_motor_1::motor_distanse - enc_motor_1::enc)/dt;
 //          Serial.print(e);
-          if (abs(e)>enc_motor_1_DISTANSE_MAX_E_K)  {
+          if (abs(e)>ENC_MOTOR_DISTANSE_MAX_E_K)  {
             enc_motor_1::enc_motor_1_end_distanse = millis(); 
             enc_motor_1::end_distanse = 0;
           }
-          else if (millis() - enc_motor_1::enc_motor_1_end_distanse < enc_motor_1_DISTANSE_END_TIME) {
+          else if (millis() - enc_motor_1::enc_motor_1_end_distanse < ENC_MOTOR_DISTANSE_END_TIME) {
             enc_motor_1::end_distanse = 1;
           }
           if (!enc_motor_1::end_distanse) {
             long int P = e;
-            long int K = constrain(e,-enc_motor_1_DISTANSE_MAX_E_K,enc_motor_1_DISTANSE_MAX_E_K);
+            long int K = constrain(e,-ENC_MOTOR_DISTANSE_MAX_E_K,ENC_MOTOR_DISTANSE_MAX_E_K);
             K = K*K*K;
             long int D = e - enc_motor_1::e_old;
             enc_motor_1::e_old = e;
-            long int PID = P*enc_motor_1_DISTANSE_KP + D*enc_motor_1_DISTANSE_KD + K*enc_motor_1_DISTANSE_KK;
+            long int PID = P*ENC_MOTOR_DISTANSE_KP + D*ENC_MOTOR_DISTANSE_KD + K*ENC_MOTOR_DISTANSE_KK;
             PID = constrain(PID,-MAX_MOTOR_MANAGEMENT_VALUE,MAX_MOTOR_MANAGEMENT_VALUE);
             PID *= enc_motor_1::distanse_razgon;
             if (enc_motor_1::distanse_razgon<1.0) {
-              enc_motor_1::distanse_razgon += enc_motor_1_DISTANSE_RAZGON_PLUS;
+              enc_motor_1::distanse_razgon += ENC_MOTOR_DISTANSE_RAZGON_PLUS;
             }
-            //PID += e_between_motor*2; ////////////////////////////////////////////////////////////////////////////////////
+            e_between_motor = e_between_motor*ENC_MOTOR_DISTANSE_BETWEEN_KP;
+            PID += constrain(e_between_motor,-MAX_MOTOR_MANAGEMENT_VALUE,MAX_MOTOR_MANAGEMENT_VALUE);
 //            Serial.print(" ");
 //            Serial.print(PID);
             enc_motor_1::run(PID);
@@ -157,7 +128,7 @@ class enc_motor_1 {
           long int P = e;
           long int D = e - enc_motor_1::e_old;
           enc_motor_1::e_old = e;
-          long int PID = P*enc_motor_1_SPEED_KP + D*enc_motor_1_SPEED_KD;
+          long int PID = P*ENC_MOTOR_SPEED_KP + D*ENC_MOTOR_SPEED_KD;
           enc_motor_1::motor_on_speed += PID;
           enc_motor_1::motor_on_speed = constrain(enc_motor_1::motor_on_speed,-MAX_MOTOR_MANAGEMENT_VALUE,MAX_MOTOR_MANAGEMENT_VALUE);
           if (enc_motor_1::motor_on_speed!=0) enc_motor_1::motor_on_speed -= enc_motor_1::motor_on_speed/abs(enc_motor_1::motor_on_speed);
