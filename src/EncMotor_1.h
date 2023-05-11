@@ -91,7 +91,7 @@ class enc_motor_1 {
         if (enc_motor_1::motor_speed_distance_mode) {
           long int e = (enc_motor_1::motor_distanse - enc_motor_1::enc)/dt;
 //          Serial.print(e);
-          if (abs(e)>ENC_MOTOR_DISTANSE_MAX_E_K)  {
+          if (abs(e)>ENC_MOTOR_DISTANSE_MAX_E_END)  {
             enc_motor_1::enc_motor_1_end_distanse = millis(); 
             enc_motor_1::end_distanse = 0;
           }

@@ -89,9 +89,9 @@ class enc_motor {
       long int dt = millis()-enc_motor::enc_motor_time;
       if (dt>MOTOR_ENC_DT) {
         if (enc_motor::motor_speed_distance_mode) {
-          long int e = (enc_motor::motor_distanse - enc_motor::enc)/dt;
-//          Serial.print(e);
-          if (abs(e)>ENC_MOTOR_DISTANSE_MAX_E_K)  {
+          long int e = ((enc_motor::motor_distanse - enc_motor::enc)/dt)*0.3 + enc_motor::e_old*0.7;
+          Serial.print(e);
+          if (abs(e)>ENC_MOTOR_DISTANSE_MAX_E_END)  {
             enc_motor::enc_motor_end_distanse = millis(); 
             enc_motor::end_distanse = 0;
           }
@@ -103,7 +103,7 @@ class enc_motor {
             long int K = constrain(e,-ENC_MOTOR_DISTANSE_MAX_E_K,ENC_MOTOR_DISTANSE_MAX_E_K);
             K = K*K*K;
             long int D = e - enc_motor::e_old;
-            enc_motor::e_old = e;
+            //enc_motor::e_old = e;
             long int PID = P*ENC_MOTOR_DISTANSE_KP + D*ENC_MOTOR_DISTANSE_KD + K*ENC_MOTOR_DISTANSE_KK;
             PID = constrain(PID,-MAX_MOTOR_MANAGEMENT_VALUE,MAX_MOTOR_MANAGEMENT_VALUE);
             PID *= enc_motor::distanse_razgon;
@@ -112,12 +112,18 @@ class enc_motor {
             }
             e_between_motor = e_between_motor*ENC_MOTOR_DISTANSE_BETWEEN_KP;
             PID += constrain(e_between_motor,-MAX_MOTOR_MANAGEMENT_VALUE,MAX_MOTOR_MANAGEMENT_VALUE);
-//            Serial.print(" ");
-//            Serial.print(PID);
+            PID = PID*0.6 + enc_motor::motor_on_speed*0.4;
+            enc_motor::motor_on_speed = PID;
+            Serial.print(" ");
+            Serial.print(PID);
             enc_motor::run(PID);
           }
-          else enc_motor::run(0);
-//          Serial.println();
+          else {
+            enc_motor::run(0);
+            Serial.print(" 0");
+          }
+          Serial.println();
+          enc_motor::e_old = e;
         }
         else {
           // calc real_speed => e
@@ -133,6 +139,7 @@ class enc_motor {
           enc_motor::motor_on_speed = constrain(enc_motor::motor_on_speed,-MAX_MOTOR_MANAGEMENT_VALUE,MAX_MOTOR_MANAGEMENT_VALUE);
           if (enc_motor::motor_on_speed!=0) enc_motor::motor_on_speed -= enc_motor::motor_on_speed/abs(enc_motor::motor_on_speed);
           enc_motor::run(enc_motor::motor_on_speed);
+          Serial.println(enc_motor::motor_on_speed);
         }
         // time update
         enc_motor::enc_motor_time = millis();
